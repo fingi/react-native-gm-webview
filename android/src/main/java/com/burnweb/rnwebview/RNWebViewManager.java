@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import android.view.ViewGroup.LayoutParams;
@@ -147,31 +146,12 @@ public class RNWebViewManager extends SimpleViewManager<RNWebView> {
 
     @ReactProp(name = "source")
     public void setSource(RNWebView view, @Nullable ReadableMap source) {
-//        if (source != null) {
-//            if (source.hasKey("baseUrl")) {
-//                setBaseUrl(view, source.getString("baseUrl"));
-//            }
-//            if (source.hasKey("html")) {
-//                setHtml(view, source.getString("html"));
-//                return;
-//            }
-//            if (source.hasKey("uri")) {
-//                if (source.hasKey("headers")) {
-//                    setHeaders(view, source.getMap("headers"));
-//                }
-//                setUrl(view, source.getString("uri"));
-//                return;
-//            }
-//        }
         if (source != null) {
+            if (source.hasKey("baseUrl")) {
+                setBaseUrl(view, source.getString("baseUrl"));
+            }
             if (source.hasKey("html")) {
-                String html = source.getString("html");
-                if (source.hasKey("baseUrl")) {
-                    view.loadDataWithBaseURL(
-                            source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
-                } else {
-                    view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
-                }
+                setHtml(view, source.getString("html"));
                 return;
             }
             if (source.hasKey("uri")) {
@@ -199,26 +179,13 @@ public class RNWebViewManager extends SimpleViewManager<RNWebView> {
                         return;
                     }
                 }
-                HashMap<String, String> headerMap = new HashMap<>();
                 if (source.hasKey("headers")) {
-                    ReadableMap headers = source.getMap("headers");
-                    ReadableMapKeySetIterator iter = headers.keySetIterator();
-                    while (iter.hasNextKey()) {
-                        String key = iter.nextKey();
-                        if ("user-agent".equals(key.toLowerCase(Locale.ENGLISH))) {
-                            if (view.getSettings() != null) {
-                                view.getSettings().setUserAgentString(headers.getString(key));
-                            }
-                        } else {
-                            headerMap.put(key, headers.getString(key));
-                        }
-                    }
+                    setHeaders(view, source.getMap("headers"));
                 }
-                view.loadUrl(url, headerMap);
+                setUrl(view, source.getString("uri"));
                 return;
             }
         }
-        view.loadUrl(BLANK_URL);
     }
 
     @ReactProp(name = "baseUrl")
