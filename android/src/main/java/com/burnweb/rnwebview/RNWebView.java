@@ -78,6 +78,7 @@ class RNWebView extends WebView implements LifecycleEventListener {
         }
 
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            view.setLayerType(view.LAYER_TYPE_SOFTWARE, null); // try setting hardware accelaration to 0 so not to spike memory
             mEventDispatcher.dispatchEvent(new NavigationStateChangeEvent(getId(), SystemClock.nanoTime(), view.getTitle(), true, url, view.canGoBack(), view.canGoForward()));
         }
     }
